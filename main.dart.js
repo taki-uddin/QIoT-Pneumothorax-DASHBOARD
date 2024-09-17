@@ -96540,7 +96540,7 @@ this.aP()},
 P(a){var s=null,r=A.FH(s,B.kK,s),q=$.aRh(),p=this.a.c,o=$.aLI.bq(),n=this.a
 if(o){n.toString
 o=new A.xo(new A.nL(s),s)}else{n.toString
-o=new A.xo(B.lm,s)}return new A.Ch(q,o,p.ga11(),"QIoT Admin Panel",r,!1,s)}}
+o=new A.xo(B.lm,s)}return new A.Ch(q,o,p.ga11(),"QIoT Pneumothorax Dashboard",r,!1,s)}}
 A.vI.prototype={}
 A.xo.prototype={
 P(a){return this.d}}
