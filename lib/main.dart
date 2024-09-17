@@ -1,17 +1,26 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:pneumothoraxdashboard/firebase_options.dart';
 import 'package:pneumothoraxdashboard/helpers/session_storage_helpers.dart';
 import 'package:pneumothoraxdashboard/routes/web_router_provider.dart';
 import 'package:pneumothoraxdashboard/routes/web_routes.dart';
 import 'package:pneumothoraxdashboard/screens/dashboard_screen.dart';
 import 'package:pneumothoraxdashboard/screens/signin_screen.dart';
+import 'package:pneumothoraxdashboard/services/analytics_service.dart';
 import 'package:pneumothoraxdashboard/services/push_notification_service.dart';
 import 'package:pneumothoraxdashboard/services/token_refresh_service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 late bool _loginState;
 String deviceType = 'web';
+
+Future _firebaseBackgroundMessageHandler(RemoteMessage message) async {
+  if (message.notification != null) {
+    print('Message received in the background!');
+  }
+}
 
 // to handle notification on foreground on web platform
 void showNotification({required String title, required String body}) {
@@ -37,12 +46,20 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
   } catch (e) {
     print("Error initializing Firebase: $e");
   }
 
   PushNotificationService.init();
+  await AnalyticsService.initialize();
+  await PushNotificationService.localNotificationInit();
+  FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundMessageHandler);
+  PushNotificationService.onNotificationTapBackground();
+  PushNotificationService.onNotificationTapForeground();
+  PushNotificationService.onNotificationTerminatedState();
 
   try {
     String? loginState = await SessionStorageHelpers.getStorage('loginState');
