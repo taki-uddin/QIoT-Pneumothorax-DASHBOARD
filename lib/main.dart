@@ -84,7 +84,7 @@ class _MainState extends State<Main> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'QIoT Admin Panel',
+      title: 'QIoT Pneumothorax Dashboard',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
