@@ -35,11 +35,23 @@ void main() async {
   final router = FluroRouter();
 
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    print("Error initializing Firebase: $e");
+  }
+
   PushNotificationService.init();
-  // Check login state from session storage
-  String? loginState = await SessionStorageHelpers.getStorage('loginState');
-  _loginState = loginState != null && loginState == 'true';
+
+  try {
+    String? loginState = await SessionStorageHelpers.getStorage('loginState');
+    _loginState = loginState != null && loginState == 'true';
+  } catch (e) {
+    print("Error getting login state: $e");
+    _loginState = false;
+  }
+
   defineRoutes(router);
 
   runApp(
