@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qiot_admin/data/top_menu_data.dart';
+import 'package:pneumothoraxdashboard/data/top_menu_data.dart';
 
 class MenuWidget extends StatefulWidget {
   const MenuWidget({super.key});

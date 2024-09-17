@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pdfx/pdfx.dart';
-import 'package:qiot_admin/data/top_menu_data.dart';
-import 'package:qiot_admin/helpers/session_storage_helpers.dart';
-import 'package:qiot_admin/screens/add_users_screen.dart';
-import 'package:qiot_admin/screens/notifications_screen.dart';
-import 'package:qiot_admin/screens/user_list_screen.dart';
-import 'package:qiot_admin/services/api/authentication.dart';
+import 'package:pneumothoraxdashboard/data/top_menu_data.dart';
+import 'package:pneumothoraxdashboard/helpers/session_storage_helpers.dart';
+import 'package:pneumothoraxdashboard/screens/add_users_screen.dart';
+import 'package:pneumothoraxdashboard/screens/notifications_screen.dart';
+import 'package:pneumothoraxdashboard/screens/user_list_screen.dart';
+import 'package:pneumothoraxdashboard/api/authentication.dart';
 import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 
-import 'package:qiot_admin/services/api/dashboard_users_data.dart';
+import 'package:pneumothoraxdashboard/api/dashboard_users_data.dart';
 
 class DashboardScreen extends StatefulWidget {
   final FluroRouter router;
@@ -34,6 +34,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     getpdfUrl();
+    _printToken();
   }
 
   Future<void> getpdfUrl() async {
@@ -103,10 +104,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
+  Future<void> _printToken() async {
+    print(
+        'Dashboard Access Token: ${await SessionStorageHelpers.getStorage('accessToken')}');
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
-    print("Access Token: ${SessionStorageHelpers.getStorage('accessToken')}");
 
     return SafeArea(
       child: Scaffold(

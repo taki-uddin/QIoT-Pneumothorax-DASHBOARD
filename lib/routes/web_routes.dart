@@ -1,13 +1,14 @@
 import 'package:fluro/fluro.dart';
-import 'package:qiot_admin/screens/dashboard_screen.dart';
-import 'package:qiot_admin/screens/signin_screen.dart';
-import 'package:qiot_admin/screens/user_details.dart';
+import 'package:flutter/material.dart';
+import 'package:pneumothoraxdashboard/screens/dashboard_screen.dart';
+import 'package:pneumothoraxdashboard/screens/signin_screen.dart';
+import 'package:pneumothoraxdashboard/screens/user_details/user_details.dart';
 
 void defineRoutes(FluroRouter router) {
   router.define(
     '/',
     handler: Handler(
-      handlerFunc: (context, params) {
+      handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
         return const SigninScreen();
       },
     ),
@@ -15,7 +16,7 @@ void defineRoutes(FluroRouter router) {
   router.define(
     '/dashboard',
     handler: Handler(
-      handlerFunc: (context, params) {
+      handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
         return DashboardScreen(
           router: router,
         );
@@ -25,7 +26,7 @@ void defineRoutes(FluroRouter router) {
   router.define(
     '/usersdetails/:id',
     handler: Handler(
-      handlerFunc: (context, params) {
+      handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
         final String? userId = params['id']?.first;
         print('userId: $userId');
         if (userId == null) {

@@ -1,6 +1,6 @@
 {
-    "name": "qiot_admin",
-    "short_name": "qiot_admin",
+    "name": "pneumothoraxdashboard",
+    "short_name": "pneumothoraxdashboard",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

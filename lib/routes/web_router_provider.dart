@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:fluro/fluro.dart';
 
 class WebRouterProvider extends StatelessWidget {
-  final Widget child;
   final FluroRouter router;
 
+  final Widget child;
+
   const WebRouterProvider({
-    Key? key,
-    required this.child,
+    super.key,
     required this.router,
-  }) : super(key: key);
+    required this.child,
+  });
 
   @override
   Widget build(BuildContext context) {

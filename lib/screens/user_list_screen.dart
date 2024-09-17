@@ -1,7 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:qiot_admin/services/api/dashboard_users_data.dart';
+import 'package:pneumothoraxdashboard/api/dashboard_users_data.dart';
 import 'dart:html' as html;
 
 class UserListScreen extends StatefulWidget {
@@ -70,7 +70,7 @@ class _UserListScreenState extends State<UserListScreen> {
             // Initialize the _rowEnabled list based on the status field
             _rowEnabled = userData.map<bool>((user) {
               // Assuming 'Enable' means enabled and others mean disabled
-              return user['status'] == 'Enable' || user['status'] == 'Enabled';
+              return user['status'] == 'Enabled';
             }).toList();
           });
         } else {
@@ -85,7 +85,7 @@ class _UserListScreenState extends State<UserListScreen> {
       _searchQuery = query;
       filteredUserData = userData.where((user) {
         // Check if the 'inhaler' field contains the query (case-insensitive)
-        return user['inhaler']
+        return user['_id']
             .toString()
             .toLowerCase()
             .contains(query.toLowerCase());
@@ -150,7 +150,7 @@ class _UserListScreenState extends State<UserListScreen> {
               Container(
                 width: screenSize.width,
                 // height: screenSize.height * 0.16,
-                height: 32,
+                height: 42,
                 margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
@@ -169,11 +169,11 @@ class _UserListScreenState extends State<UserListScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Inhaler Serial Number
+                    // User ID
                     Expanded(
                       flex: 4,
                       child: Text(
-                        "Inhaler Serial Number",
+                        "User ID",
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           color: Color(0xFF004283),
@@ -186,7 +186,7 @@ class _UserListScreenState extends State<UserListScreen> {
                     Expanded(
                       flex: 2,
                       child: Text(
-                        "Peakflow Baseline",
+                        "Weight",
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           color: Color(0xFF004283),
@@ -199,7 +199,7 @@ class _UserListScreenState extends State<UserListScreen> {
                     Expanded(
                       flex: 2,
                       child: Text(
-                        "Personal Plan",
+                        "Temperature",
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           color: Color(0xFF004283),
@@ -208,11 +208,11 @@ class _UserListScreenState extends State<UserListScreen> {
                         ),
                       ),
                     ),
-                    // Edit
+                    // Heart Rate
                     Expanded(
-                      flex: 1,
+                      flex: 2,
                       child: Text(
-                        "Edit",
+                        "Heart Rate",
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           color: Color(0xFF004283),
@@ -222,18 +222,18 @@ class _UserListScreenState extends State<UserListScreen> {
                       ),
                     ),
                     // Delete
-                    Expanded(
-                      flex: 1,
-                      child: Text(
-                        "Delete",
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Color(0xFF004283),
-                          fontSize: 14,
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                    ),
+                    // Expanded(
+                    //   flex: 1,
+                    //   child: Text(
+                    //     "Delete",
+                    //     textAlign: TextAlign.center,
+                    //     style: const TextStyle(
+                    //       color: Color(0xFF004283),
+                    //       fontSize: 14,
+                    //       fontWeight: FontWeight.normal,
+                    //     ),
+                    //   ),
+                    // ),
                     // Enable/Disable
                     Expanded(
                       flex: 2,
@@ -276,7 +276,7 @@ class _UserListScreenState extends State<UserListScreen> {
                         child: Container(
                           width: screenSize.width,
                           // height: screenSize.height * 0.16,
-                          height: 80,
+                          height: 64,
                           margin: const EdgeInsets.symmetric(
                               vertical: 4, horizontal: 16),
                           padding: const EdgeInsets.all(8),
@@ -299,11 +299,11 @@ class _UserListScreenState extends State<UserListScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              // Inhaler Serial Number
+                              // User ID
                               Expanded(
                                 flex: 4,
                                 child: Text(
-                                  filteredUserData[index]['inhaler'],
+                                  filteredUserData[index]['_id'],
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
                                     color: Color(0xFF004283),
@@ -312,154 +312,61 @@ class _UserListScreenState extends State<UserListScreen> {
                                   ),
                                 ),
                               ),
-                              // Peakflow Baseline
+                              // Weight
                               Expanded(
                                 flex: 2,
-                                child: Container(
-                                  width: screenSize.width * 0.1,
-                                  // height: screenSize.height * 0.12,
-                                  height: 64,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF004283)
-                                        .withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  padding: const EdgeInsets.all(4),
-                                  child: Center(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        const Text(
-                                          'Peakflow Baseline',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.normal,
-                                          ),
-                                        ),
-                                        _hoverIndex == index
-                                            ? ElevatedButton(
-                                                onPressed: () {},
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor:
-                                                      const Color(0xFF004283),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            4),
-                                                  ),
-                                                ),
-                                                child: const Text(
-                                                  'Reset',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 14,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                  ),
-                                                ),
-                                              )
-                                            : Text(
-                                                '${filteredUserData[index]['baseLineScore']}',
-                                                textAlign: TextAlign.center,
-                                                style: const TextStyle(
-                                                  fontSize: 24,
-                                                  fontWeight: FontWeight.normal,
-                                                ),
-                                              ),
-                                      ],
-                                    ),
+                                child: Text(
+                                  '${filteredUserData[index]['weight']}',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.normal,
                                   ),
                                 ),
                               ),
-                              // Personal Plan
+                              // Body Temperature
                               Expanded(
                                 flex: 2,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    uploadUserAAP(
-                                        filteredUserData[index]['_id']);
-                                  },
-                                  child: Container(
-                                    width: screenSize.width * 0.1,
-                                    // height: screenSize.height * 0.12,
-                                    height: 64,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF004283)
-                                          .withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    margin: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                    ),
-                                    child: Center(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          SvgPicture.asset(
-                                            'assets/svg/personal_plan.svg',
-                                            width: 24,
-                                            height: 24,
-                                          ),
-                                          const Text(
-                                            'Personal Plan',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.normal,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                child: Text(
+                                  '${filteredUserData[index]['temeprature']}',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.normal,
                                   ),
                                 ),
                               ),
-                              // Edit
+                              // Heart Rate
                               Expanded(
-                                flex: 1,
-                                child: SizedBox(
-                                  width: screenSize.width * 0.1,
-                                  height: screenSize.height * 0.04,
-                                  child: const Center(
-                                    child: Text(
-                                      'Edit',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Color(0xFF004283),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.normal,
-                                      ),
-                                    ),
+                                flex: 2,
+                                child: Text(
+                                  '${filteredUserData[index]['heartRate']}',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.normal,
                                   ),
                                 ),
                               ),
                               // Delete
-                              Expanded(
-                                flex: 1,
-                                child: SizedBox(
-                                  width: screenSize.width * 0.1,
-                                  height: screenSize.height * 0.04,
-                                  child: const Center(
-                                    child: Text(
-                                      'Delete',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Color(0xFF004283),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.normal,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                              // Expanded(
+                              //   flex: 1,
+                              //   child: SizedBox(
+                              //     width: screenSize.width * 0.1,
+                              //     height: screenSize.height * 0.04,
+                              //     child: const Center(
+                              //       child: Text(
+                              //         'Delete',
+                              //         textAlign: TextAlign.center,
+                              //         style: TextStyle(
+                              //           color: Color(0xFF004283),
+                              //           fontSize: 14,
+                              //           fontWeight: FontWeight.normal,
+                              //         ),
+                              //       ),
+                              //     ),
+                              //   ),
+                              // ),
                               // Enable/Disable
                               Expanded(
                                 flex: 2,
@@ -468,7 +375,7 @@ class _UserListScreenState extends State<UserListScreen> {
                                   height: 8,
                                   child: Center(
                                     child: Transform.scale(
-                                      scale: 1, // Adjust scale as needed
+                                      scale: 0.8, // Adjust scale as needed
                                       child: Switch(
                                         value: _rowEnabled[
                                             index], // Use _rowEnabled to enable/disable rows

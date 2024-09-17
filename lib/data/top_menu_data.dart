@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qiot_admin/models/menu_model.dart';
+import 'package:pneumothoraxdashboard/models/menu_model.dart';
 
 class TopMenuData {
   final menu = const <MenuModel>[

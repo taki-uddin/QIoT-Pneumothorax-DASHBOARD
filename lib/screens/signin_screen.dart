@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:qiot_admin/helpers/session_storage_helpers.dart';
-import 'package:qiot_admin/services/api/authentication.dart';
+import 'package:pneumothoraxdashboard/helpers/session_storage_helpers.dart';
+import 'package:pneumothoraxdashboard/api/authentication.dart';
 
 class SigninScreen extends StatefulWidget {
   const SigninScreen({super.key});
@@ -47,6 +47,9 @@ class _SigninScreenState extends State<SigninScreen> {
         SessionStorageHelpers.setStorage('loginState', 'true');
         SessionStorageHelpers.setStorage(
             'accessToken', responseData?['accessToken']);
+
+        SessionStorageHelpers.setStorage(
+            'refreshToken', responseData?['refreshToken']);
         print(responseData?['payload'][0]['user']['_id']);
         SessionStorageHelpers.setStorage(
             'userID', responseData?['payload'][0]['user']['_id']);
