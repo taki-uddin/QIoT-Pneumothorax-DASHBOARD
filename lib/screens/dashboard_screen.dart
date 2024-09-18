@@ -6,7 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:pneumothoraxdashboard/data/top_menu_data.dart';
 import 'package:pneumothoraxdashboard/helpers/session_storage_helpers.dart';
-import 'package:pneumothoraxdashboard/screens/add_users_screen.dart';
+import 'package:pneumothoraxdashboard/screens/add_doctors_screen.dart';
 import 'package:pneumothoraxdashboard/screens/notifications_screen.dart';
 import 'package:pneumothoraxdashboard/screens/user_list_screen.dart';
 import 'package:pneumothoraxdashboard/api/authentication.dart';
@@ -360,7 +360,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       case 1:
         return const NotificationsScreen();
       case 2:
-        return const AddUsersScreen();
+        return const AddDoctorsScreen();
     }
     return const UserListScreen();
   }

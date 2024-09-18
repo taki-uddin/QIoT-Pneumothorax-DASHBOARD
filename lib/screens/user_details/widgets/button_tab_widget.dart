@@ -5,6 +5,7 @@ class ButtonTabWidget extends StatelessWidget {
   final Color color;
   final dynamic value;
   final VoidCallback onTap;
+  final double screenRatio;
 
   const ButtonTabWidget({
     super.key,
@@ -12,6 +13,7 @@ class ButtonTabWidget extends StatelessWidget {
     required this.color,
     required this.value,
     required this.onTap,
+    required this.screenRatio,
   });
 
   @override
@@ -19,7 +21,7 @@ class ButtonTabWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.2,
+        width: screenRatio * 128,
         height: MediaQuery.of(context).size.height * 0.08,
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
@@ -38,11 +40,14 @@ class ButtonTabWidget extends StatelessWidget {
           children: [
             Text(
               '$label: ',
-              style:
-                  const TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
+              style: TextStyle(
+                fontSize: screenRatio * 10,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
             ),
             Container(
-              width: MediaQuery.of(context).size.width * 0.04,
+              width: screenRatio * 32,
               height: MediaQuery.of(context).size.height * 0.06,
               decoration: BoxDecoration(
                 color: color,
@@ -59,7 +64,11 @@ class ButtonTabWidget extends StatelessWidget {
                 child: Text(
                   '$value',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white, fontSize: 20),
+                  style: TextStyle(
+                    fontSize: screenRatio * 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
