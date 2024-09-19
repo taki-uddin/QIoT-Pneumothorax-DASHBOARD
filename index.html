@@ -46,7 +46,7 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
         navigator.serviceWorker.register('/QIoT-Pneumothorax-DASHBOARD/firebase-messaging-sw.js', {
-          scope: '/firebase-cloud-messaging-push-scope',
+          scope: '/QIoT-Pneumothorax-DASHBOARD/',
         }).then(function(registration) {
           console.log('Service Worker registered with scope:', registration.scope);
         }).catch(function(error) {
