@@ -70,61 +70,69 @@ class HistoryChart extends StatelessWidget {
     final xInterval = (range > 1) ? (maxX - minX) / (range - 1) : 1.0;
     final yInterval = (range > 1) ? (maxY - minY) / (range - 1) : 1.0;
 
-    return LineChart(
-      LineChartData(
-        lineTouchData: LineTouchData(
-          handleBuiltInTouches: true,
-          touchTooltipData: LineTouchTooltipData(
-            getTooltipColor: (touchedSpot) => AppColors.highlightLight,
-          ),
-        ),
-        gridData: FlGridData(show: showGrid),
-        titlesData: FlTitlesData(
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 128,
-              interval: xInterval, // Adjust based on number of x-ticks
-              getTitlesWidget: bottomTitleWidgets,
+    return data.isEmpty
+        ? const Text(
+            'No chart data available',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.normal,
             ),
-          ),
-          rightTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          topTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              getTitlesWidget: leftTitleWidgets,
-              showTitles: true,
-              interval: yInterval, // Adjust based on number of y-ticks
-              reservedSize: 40,
+          )
+        : LineChart(
+            LineChartData(
+              lineTouchData: LineTouchData(
+                handleBuiltInTouches: true,
+                touchTooltipData: LineTouchTooltipData(
+                  getTooltipColor: (touchedSpot) => AppColors.highlightLight,
+                ),
+              ),
+              gridData: FlGridData(show: showGrid),
+              titlesData: FlTitlesData(
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 128,
+                    interval: xInterval, // Adjust based on number of x-ticks
+                    getTitlesWidget: bottomTitleWidgets,
+                  ),
+                ),
+                rightTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                topTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    getTitlesWidget: leftTitleWidgets,
+                    showTitles: true,
+                    interval: yInterval, // Adjust based on number of y-ticks
+                    reservedSize: 40,
+                  ),
+                ),
+              ),
+              borderData: FlBorderData(
+                show: true,
+                border: Border.all(color: AppColors.highlightLight, width: 1),
+              ),
+              lineBarsData: [
+                LineChartBarData(
+                  isCurved: false,
+                  color: lineColor,
+                  barWidth: lineWidth,
+                  isStrokeCapRound: true,
+                  dotData: FlDotData(show: showDots),
+                  belowBarData: BarAreaData(show: showBelowBar),
+                  spots: spots,
+                ),
+              ],
+              minX: minX,
+              maxX: maxX,
+              minY: minY,
+              maxY: maxY,
             ),
-          ),
-        ),
-        borderData: FlBorderData(
-          show: true,
-          border: Border.all(color: AppColors.highlightLight, width: 1),
-        ),
-        lineBarsData: [
-          LineChartBarData(
-            isCurved: false,
-            color: lineColor,
-            barWidth: lineWidth,
-            isStrokeCapRound: true,
-            dotData: FlDotData(show: showDots),
-            belowBarData: BarAreaData(show: showBelowBar),
-            spots: spots,
-          ),
-        ],
-        minX: minX,
-        maxX: maxX,
-        minY: minY,
-        maxY: maxY,
-      ),
-      duration: const Duration(milliseconds: 250),
-    );
+            duration: const Duration(milliseconds: 250),
+          );
   }
 
   Widget leftTitleWidgets(double value, TitleMeta meta) {

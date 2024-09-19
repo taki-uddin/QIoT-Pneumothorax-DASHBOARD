@@ -21,9 +21,6 @@ class DashboardUsersData {
     try {
       http.StreamedResponse response = await request.send();
       String responseBody = await response.stream.bytesToString();
-
-      print('getAllUsersData Response: $responseBody');
-
       if (response.statusCode == 200) {
         if (responseBody.isNotEmpty) {
           Map<String, dynamic>? jsonResponse = json.decode(responseBody);
@@ -128,6 +125,39 @@ class DashboardUsersData {
       http.StreamedResponse response = await request.send();
       String responseBody = await response.stream.bytesToString();
       if (response.statusCode == 201) {
+        if (responseBody.isNotEmpty) {
+          Map<String, dynamic>? jsonResponse = json.decode(responseBody);
+          return jsonResponse;
+        } else {
+          print('Response body is empty or null');
+          return null;
+        }
+      } else {
+        print("error: ${response.reasonPhrase}");
+        return null;
+      }
+    } catch (e) {
+      print('error: Failed to make HTTP request: $e');
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> getAllImages(String userId) async {
+    var headers = {
+      // 'Content-Type': 'application/json',
+      'Authorization':
+          'Bearer ${await SessionStorageHelpers.getStorage('accessToken')}',
+    };
+
+    var request = http.Request(
+        'GET', Uri.parse('${ApiConstants.baseURL}/admin/image/$userId'));
+    request.headers.addAll(headers);
+
+    try {
+      http.StreamedResponse response = await request.send();
+      String responseBody = await response.stream.bytesToString();
+      print('responsecode: ${response.statusCode}');
+      if (response.statusCode == 200) {
         if (responseBody.isNotEmpty) {
           Map<String, dynamic>? jsonResponse = json.decode(responseBody);
           return jsonResponse;

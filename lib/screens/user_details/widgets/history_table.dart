@@ -24,47 +24,56 @@ class HistoryTable extends StatelessWidget {
 
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
-      child: Table(
-        border: TableBorder.all(
-          color: AppColors.primaryBlue,
-          width: 2,
-          borderRadius: BorderRadius.circular(screenRatio),
-        ),
-        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-        children: [
-          TableRow(
-            decoration: const BoxDecoration(
-              color: AppColors.primaryBlue,
+      child: data.isEmpty
+          ? const Text(
+              'No table data available',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.normal,
+              ),
+            )
+          : Table(
+              border: TableBorder.all(
+                color: AppColors.primaryBlue,
+                width: 2,
+                borderRadius: BorderRadius.circular(screenRatio),
+              ),
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              children: [
+                TableRow(
+                  decoration: const BoxDecoration(
+                    color: AppColors.primaryBlue,
+                  ),
+                  children: [
+                    _buildHeaderCell('Date and Time', screenRatio),
+                    _buildHeaderCell(valueSecondColumn, screenRatio),
+                    if (valueThirdColumn.isNotEmpty)
+                      _buildHeaderCell(valueThirdColumn, screenRatio),
+                  ],
+                ),
+                ...data.map(
+                  (item) {
+                    final createdAt = DateTime.tryParse(item['createdAt']);
+                    final formattedDate = createdAt != null
+                        ? dateFormat.format(createdAt)
+                        : 'Invalid Date';
+                    final valueSecond =
+                        item[valueSecondField]?.toString() ?? 'N/A';
+                    final valueThird = valueThirdField.isNotEmpty
+                        ? item[valueThirdField]?.toString() ?? 'N/A'
+                        : null;
+                    return TableRow(
+                      children: [
+                        _buildDataCell(formattedDate, screenRatio),
+                        _buildDataCell(valueSecond, screenRatio),
+                        if (valueThird != null)
+                          _buildDataCell(valueThird, screenRatio),
+                      ],
+                    );
+                  },
+                ).toList(),
+              ],
             ),
-            children: [
-              _buildHeaderCell('Date and Time', screenRatio),
-              _buildHeaderCell(valueSecondColumn, screenRatio),
-              if (valueThirdColumn.isNotEmpty)
-                _buildHeaderCell(valueThirdColumn, screenRatio),
-            ],
-          ),
-          ...data.map(
-            (item) {
-              final createdAt = DateTime.tryParse(item['createdAt']);
-              final formattedDate = createdAt != null
-                  ? dateFormat.format(createdAt)
-                  : 'Invalid Date';
-              final valueSecond = item[valueSecondField]?.toString() ?? 'N/A';
-              final valueThird = valueThirdField.isNotEmpty
-                  ? item[valueThirdField]?.toString() ?? 'N/A'
-                  : null;
-              return TableRow(
-                children: [
-                  _buildDataCell(formattedDate, screenRatio),
-                  _buildDataCell(valueSecond, screenRatio),
-                  if (valueThird != null)
-                    _buildDataCell(valueThird, screenRatio),
-                ],
-              );
-            },
-          ).toList(),
-        ],
-      ),
     );
   }
 
