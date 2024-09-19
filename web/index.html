@@ -52,7 +52,24 @@
     }
   </script>
   <script type="text/javascript">
-    window.flutterWebRenderer = "html";
+    document.addEventListener('DOMContentLoaded', function () {
+      const config = {
+        renderer: 'html' // or 'canvaskit', based on your choice
+      };
+
+      // Initialize Flutter engine if engineInitializer is available
+      if (typeof window.engineInitializer !== 'undefined') {
+        window.engineInitializer.initializeEngine(config)
+          .then(() => {
+            console.log('Flutter engine initialized');
+          })
+          .catch((error) => {
+            console.error('Failed to initialize Flutter engine:', error);
+          });
+      } else {
+        console.error('engineInitializer is not defined');
+      }
+    });
   </script>
 </body>
 </html>

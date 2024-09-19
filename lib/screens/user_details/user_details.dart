@@ -5,6 +5,7 @@ import 'package:pneumothoraxdashboard/screens/user_details/widgets/history_chart
 import 'package:pneumothoraxdashboard/screens/user_details/widgets/history_table.dart';
 import 'package:pneumothoraxdashboard/api/dashboard_users_data.dart';
 import 'package:pneumothoraxdashboard/screens/user_details/widgets/image_gallery_widget.dart';
+import 'package:pneumothoraxdashboard/screens/user_details/widgets/medication_table.dart';
 
 class UserDetails extends StatefulWidget {
   final String userId; // Add a field to store the user ID
@@ -15,7 +16,7 @@ class UserDetails extends StatefulWidget {
 }
 
 class _UserDetailsState extends State<UserDetails> {
-  List<dynamic> userData = [];
+  Map<String, dynamic> userData = {};
   List<dynamic> drainageRateHistory = [];
   List<dynamic> respiratoryRateHistory = [];
   List<dynamic> getAllImagesHistory = [];
@@ -30,9 +31,9 @@ class _UserDetailsState extends State<UserDetails> {
     setState(() {
       userId = widget.userId;
     });
-    getUserByIdData(widget.userId);
-    getDrainageRateHistories(widget.userId);
-    getAllImages(widget.userId);
+    getUserByIdData(userId);
+    getDrainageRateHistories(userId);
+    getAllImages(userId);
   }
 
   Future<void> getUserByIdData(String userId) async {
@@ -43,6 +44,7 @@ class _UserDetailsState extends State<UserDetails> {
             userData = value['payload'];
             hasData = true;
           });
+          print('Userdetails data: ${userData}');
         } else {
           print('Failed to get user data');
         }
@@ -98,8 +100,6 @@ class _UserDetailsState extends State<UserDetails> {
           setState(() {
             getAllImagesHistory = payload;
           });
-
-          print('Images: $getAllImagesHistory');
         } else {
           print('Failed to get image data');
         }
@@ -112,7 +112,6 @@ class _UserDetailsState extends State<UserDetails> {
     final Size screenSize = MediaQuery.of(context).size;
     final double screenRatio =
         MediaQuery.of(context).size.width / MediaQuery.of(context).size.height;
-    print('Screen ratio: $screenRatio');
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9FB),
@@ -132,14 +131,14 @@ class _UserDetailsState extends State<UserDetails> {
                     children: [
                       // Left Container
                       SizedBox(
-                        width: screenSize.width * 0.2,
+                        width: screenSize.width * 0.22,
                         height: screenSize.height,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Name: ${userData[0]['firstName']} ${userData[0]['lastName']}', // Display the user ID
+                              'Name: ${userData['firstName']} ${userData['lastName']}', // Display the user ID
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.normal,
@@ -149,7 +148,7 @@ class _UserDetailsState extends State<UserDetails> {
                               height: screenSize.height * 0.02,
                             ),
                             Text(
-                              'Weight: ${userData[0]['weight']}', // Display the user ID
+                              'Weight: ${userData['weight']}', // Display the user ID
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.normal,
@@ -159,7 +158,7 @@ class _UserDetailsState extends State<UserDetails> {
                               height: screenSize.height * 0.02,
                             ),
                             Text(
-                              'Body Temperature: ${userData[0]['temeprature']}', // Display the user ID
+                              'Body Temperature: ${userData['temeprature']}', // Display the user ID
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.normal,
@@ -169,7 +168,7 @@ class _UserDetailsState extends State<UserDetails> {
                               height: screenSize.height * 0.02,
                             ),
                             Text(
-                              'Heart Rate: ${userData[0]['heartRate']}', // Display the user ID
+                              'Heart Rate: ${userData['heartRate']}', // Display the user ID
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.normal,
@@ -179,7 +178,7 @@ class _UserDetailsState extends State<UserDetails> {
                               height: screenSize.height * 0.02,
                             ),
                             Text(
-                              'Blood Pressure: ${userData[0]['bloodPressure']}', // Display the user ID
+                              'Blood Pressure: ${userData['bloodPressure']}', // Display the user ID
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.normal,
@@ -189,7 +188,7 @@ class _UserDetailsState extends State<UserDetails> {
                               height: screenSize.height * 0.02,
                             ),
                             Text(
-                              'Post Operative Day: ${userData[0]['postOperativeDay']}', // Display the user ID
+                              'Post Operative Day: ${userData['postOperativeDay']}', // Display the user ID
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.normal,
@@ -198,151 +197,9 @@ class _UserDetailsState extends State<UserDetails> {
                             SizedBox(
                               height: screenSize.height * 0.02,
                             ),
-                            SizedBox(
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Table(
-                                    border: TableBorder.all(
-                                      color: AppColors.primaryBlue,
-                                      width: 2,
-                                      borderRadius:
-                                          BorderRadius.circular(screenRatio),
-                                    ),
-                                    defaultVerticalAlignment:
-                                        TableCellVerticalAlignment.middle,
-                                    children: [
-                                      TableRow(
-                                        decoration: const BoxDecoration(
-                                          color: AppColors.primaryBlue,
-                                        ),
-                                        children: [
-                                          TableCell(
-                                            child: SizedBox(
-                                              height: 60.0,
-                                              child: Center(
-                                                child: Text(
-                                                  'Medication',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    color:
-                                                        AppColors.primaryWhite,
-                                                    fontSize: screenRatio * 8,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    fontFamily: 'Roboto',
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          TableCell(
-                                            child: SizedBox(
-                                              height: 60.0,
-                                              child: Center(
-                                                child: Text(
-                                                  'Dosage',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    color:
-                                                        AppColors.primaryWhite,
-                                                    fontSize: screenRatio * 8,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    fontFamily: 'Roboto',
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          TableCell(
-                                            child: SizedBox(
-                                              height: 60.0,
-                                              child: Center(
-                                                child: Text(
-                                                  'Frequency',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    color:
-                                                        AppColors.primaryWhite,
-                                                    fontSize: screenRatio * 8,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    fontFamily: 'Roboto',
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      ...List.generate(
-                                        5,
-                                        (index) => TableRow(
-                                          children: [
-                                            TableCell(
-                                              child: SizedBox(
-                                                height: 32.0,
-                                                child: Center(
-                                                  child: Text(
-                                                    'Medication Name',
-                                                    style: TextStyle(
-                                                      color:
-                                                          AppColors.primaryBlue,
-                                                      fontSize: screenRatio * 6,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                      fontFamily: 'Roboto',
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            TableCell(
-                                              child: SizedBox(
-                                                height: 32.0,
-                                                child: Center(
-                                                  child: Text(
-                                                    'Dosage',
-                                                    style: TextStyle(
-                                                      color:
-                                                          AppColors.primaryBlue,
-                                                      fontSize: screenRatio * 6,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                      fontFamily: 'Roboto',
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            TableCell(
-                                              child: SizedBox(
-                                                height: 32.0,
-                                                child: Center(
-                                                  child: Text(
-                                                    'Frequency',
-                                                    style: TextStyle(
-                                                      color:
-                                                          AppColors.primaryBlue,
-                                                      fontSize: screenRatio * 6,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                      fontFamily: 'Roboto',
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                            MedicationTable(
+                              medications: userData['medications'],
+                              screenRatio: screenRatio,
                             ),
                           ],
                         ),
@@ -350,9 +207,9 @@ class _UserDetailsState extends State<UserDetails> {
                       SizedBox(
                         width: screenSize.width * 0.02,
                       ),
-                      // Right Container
+                      // Middle Container
                       SizedBox(
-                        width: screenSize.width * 0.58,
+                        width: screenSize.width * 0.56,
                         height: screenSize.height,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -365,10 +222,9 @@ class _UserDetailsState extends State<UserDetails> {
                                 ButtonTabWidget(
                                   label: 'Drainage Rate',
                                   color: const Color(0xFF27AE60),
-                                  value: userData[0]['drainageRate'],
+                                  value: userData['drainageRate'],
                                   onTap: () {
-                                    getDrainageRateHistories(
-                                        userData[0]['_id']);
+                                    getDrainageRateHistories(userData['_id']);
                                     setState(() {
                                       showDrainageRate = true;
                                       showRespiratoryRate = false;
@@ -379,10 +235,10 @@ class _UserDetailsState extends State<UserDetails> {
                                 ButtonTabWidget(
                                   label: 'Respiratory Rate',
                                   color: const Color(0xFFFD4646),
-                                  value: userData[0]['respiratoryRate'],
+                                  value: userData['respiratoryRate'],
                                   onTap: () {
                                     getRespiratoryRateHistories(
-                                        userData[0]['_id']);
+                                        userData['_id']);
                                     setState(() {
                                       showDrainageRate = false;
                                       showRespiratoryRate = true;
@@ -393,7 +249,7 @@ class _UserDetailsState extends State<UserDetails> {
                                 ButtonTabWidget(
                                   label: 'Blood Saturation',
                                   color: const Color(0xFFFF8500),
-                                  value: userData[0]['bloodSaturation'],
+                                  value: userData['bloodSaturation'],
                                   onTap: () {
                                     // Handle blood saturation tap
                                   },
