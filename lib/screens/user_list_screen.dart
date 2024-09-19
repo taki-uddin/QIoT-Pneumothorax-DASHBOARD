@@ -1,6 +1,5 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:pneumothoraxdashboard/api/dashboard_users_data.dart';
 import 'dart:html' as html;
 
