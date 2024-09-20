@@ -14,7 +14,7 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
-  <base href="/QIoT-Pneumothorax-DASHBOARD/">
+  <!-- <base href="/"> -->
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
@@ -42,27 +42,34 @@
       cMapPacked: true,
     }
   </script>
-  <!-- <script>
+  <script src="flutter_bootstrap.js" async>
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/QIoT-Pneumothorax-DASHBOARD/firebase-messaging-sw.js', {
-          scope: '/QIoT-Pneumothorax-DASHBOARD/firebase-cloud-messaging-push-scope',
-        }).then(function(registration) {
-          console.log('Service Worker registered with scope:', registration.scope);
-        }).catch(function(error) {
-          console.log('Service Worker registration failed:', error);
-        });
-      
-    } else {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/QIoT-Pneumothorax-DASHBOARD/firebase-messaging-sw.js', {
-          scope: '/QIoT-Pneumothorax-DASHBOARD/firebase-cloud-messaging-push-scope',
-        }).then(function(registration) {
-          console.log('Service Worker registered with scope:', registration.scope);
-        }).catch(function(error) {
-          console.log('Service Worker registration failed:', error);
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('firebase-messaging-sw.js', {
+          scope: '/firebase-cloud-messaging-push-scope',
         });
       });
     }
-  </script> -->
+  </script>
+  <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+      const config = {
+        renderer: 'html' // or 'canvaskit', based on your choice
+      };
+
+      // Initialize Flutter engine if engineInitializer is available
+      if (typeof window.engineInitializer !== 'undefined') {
+        window.engineInitializer.initializeEngine(config)
+          .then(() => {
+            console.log('Flutter engine initialized');
+          })
+          .catch((error) => {
+            console.error('Failed to initialize Flutter engine:', error);
+          });
+      } else {
+        console.error('engineInitializer is not defined');
+      }
+    });
+  </script>
 </body>
 </html>
