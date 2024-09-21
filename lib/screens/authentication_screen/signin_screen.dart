@@ -53,7 +53,16 @@ class _SigninScreenState extends State<SigninScreen> {
         print(responseData?['payload'][0]['user']['_id']);
         SessionStorageHelpers.setStorage(
             'userID', responseData?['payload'][0]['user']['_id']);
-        Navigator.popAndPushNamed(context, '/dashboard');
+        SessionStorageHelpers.setStorage(
+            'userRole', responseData?['payload'][0]['user']['userRole']);
+        // Navigator.popAndPushNamed(context, '/dashboard');
+        Navigator.pushNamed(
+          context,
+          '/dashboard',
+          arguments: {
+            'userRole': '${responseData?['payload'][0]['user']['userRole']}'
+          },
+        );
       } else {
         // Authentication failed
         print('Authentication failed: $errorMessage');

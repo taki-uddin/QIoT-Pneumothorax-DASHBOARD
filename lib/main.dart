@@ -6,8 +6,8 @@ import 'package:pneumothoraxdashboard/firebase_options.dart';
 import 'package:pneumothoraxdashboard/helpers/session_storage_helpers.dart';
 import 'package:pneumothoraxdashboard/routes/web_router_provider.dart';
 import 'package:pneumothoraxdashboard/routes/web_routes.dart';
-import 'package:pneumothoraxdashboard/screens/dashboard_screen.dart';
-import 'package:pneumothoraxdashboard/screens/signin_screen.dart';
+import 'package:pneumothoraxdashboard/screens/dashboard_screen/dashboard_screen.dart';
+import 'package:pneumothoraxdashboard/screens/authentication_screen/signin_screen.dart';
 import 'package:pneumothoraxdashboard/services/analytics_service.dart';
 import 'package:pneumothoraxdashboard/services/push_notification_service.dart';
 import 'package:pneumothoraxdashboard/services/token_refresh_service.dart';
@@ -101,6 +101,8 @@ class _MainState extends State<Main> {
     // Initialize the TokenRefreshService
     await Future.delayed(const Duration(seconds: 2)); // Optional delay
     _tokenRefreshService.initialize(null, deviceType);
+
+    _tokenRefreshService.startTokenRefreshTimer(); // Optional refresh token
   }
 
   @override

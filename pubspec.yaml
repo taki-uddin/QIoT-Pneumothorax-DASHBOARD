@@ -28,6 +28,8 @@ dependencies:
   firebase_messaging: ^15.1.1
   firebase_analytics: ^11.0.1
   flutter_local_notifications: ^17.1.2
+  pdf: ^3.11.1
+  printing: ^5.13.2
 
 dev_dependencies:
   flutter_test:

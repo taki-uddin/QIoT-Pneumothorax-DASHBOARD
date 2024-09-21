@@ -32,7 +32,6 @@ class PushNotificationService {
       token = await _firebaseMessaging.getToken(
           vapidKey:
               'BHUmYLbdwedDQjN4btEurN4SBwTLJYNwcZy3WKA2DL3UMu7fhc0Pe23S-zzubOvQkt_FdmfWcyk2u1WA38-6C3s');
-      print('for web device token: $token');
       return token;
     } catch (e) {
       print('failed to get device token');

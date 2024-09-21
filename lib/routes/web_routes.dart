@@ -1,7 +1,7 @@
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
-import 'package:pneumothoraxdashboard/screens/dashboard_screen.dart';
-import 'package:pneumothoraxdashboard/screens/signin_screen.dart';
+import 'package:pneumothoraxdashboard/screens/dashboard_screen/dashboard_screen.dart';
+import 'package:pneumothoraxdashboard/screens/authentication_screen/signin_screen.dart';
 import 'package:pneumothoraxdashboard/screens/user_details/user_details.dart';
 
 void defineRoutes(FluroRouter router) {
@@ -28,7 +28,6 @@ void defineRoutes(FluroRouter router) {
     handler: Handler(
       handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
         final String? userId = params['id']?.first;
-        print('userId: $userId');
         if (userId == null) {
           // Handle the case where userId is null
           return const SigninScreen(); // or any other fallback screen

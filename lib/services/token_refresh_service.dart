@@ -18,16 +18,15 @@ class TokenRefreshService {
   void initialize(String? deviceToken, String deviceType) {
     _deviceToken = deviceToken;
     _deviceType = deviceType;
-    _startTokenRefreshTimer();
+    _timer = Timer.periodic(const Duration(minutes: 45), (timer) async {
+      startTokenRefreshTimer();
+    });
     _setupVisibilityChangeListener();
   }
 
-  void _startTokenRefreshTimer() {
+  void startTokenRefreshTimer() async {
     _timer?.cancel();
-    _timer = Timer.periodic(const Duration(minutes: 45), (timer) async {
-      print('Token refresh timer triggered at ${DateTime.now()}');
-      await _refreshToken();
-    });
+    await _refreshToken();
   }
 
   Future<void> _refreshToken() async {
@@ -42,7 +41,7 @@ class TokenRefreshService {
       final response = await Authentication().refreshToken(
         accessToken!,
         refreshToken!,
-        null,
+        _deviceToken,
         _deviceType!,
       );
       final jsonResponse = response;
@@ -65,7 +64,7 @@ class TokenRefreshService {
     html.document.onVisibilityChange.listen((event) {
       if (html.document.visibilityState == 'visible') {
         print('App is visible again');
-        _startTokenRefreshTimer(); // Restart timer when app becomes visible
+        startTokenRefreshTimer(); // Restart timer when app becomes visible
       }
     });
   }

@@ -6,8 +6,6 @@ import 'package:pneumothoraxdashboard/helpers/session_storage_helpers.dart';
 
 class DashboardUsersData {
   static Future<Map<String, dynamic>?> getAllUsersData() async {
-    print(
-        'getAllUsersData Access Token: ${await SessionStorageHelpers.getStorage('accessToken')}');
     var headers = {
       // 'Content-Type': 'application/json',
       'Authorization':
@@ -72,8 +70,8 @@ class DashboardUsersData {
     }
   }
 
-  static Future<Map<String, dynamic>?> getDrainageRateHistories(
-      String userId, int month, int year) async {
+  static Future<Map<String, dynamic>?> getDrainageRateHistories(String userId,
+      int startmonth, int startyear, int endmonth, int endyear) async {
     var headers = {
       // 'Content-Type': 'application/json',
       'Authorization':
@@ -83,13 +81,13 @@ class DashboardUsersData {
     var request = http.Request(
         'GET',
         Uri.parse(
-            '${ApiConstants.baseURL}/admin/drainageratehistory/$userId?month=$month&year=$year'));
+            '${ApiConstants.baseURL}/admin/drainageratehistory/$userId?startmonth=$startmonth&startyear=$startyear&endmonth=$endmonth&endyear=$endyear'));
     request.headers.addAll(headers);
 
     try {
       http.StreamedResponse response = await request.send();
       String responseBody = await response.stream.bytesToString();
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         if (responseBody.isNotEmpty) {
           Map<String, dynamic>? jsonResponse = json.decode(responseBody);
           return jsonResponse;

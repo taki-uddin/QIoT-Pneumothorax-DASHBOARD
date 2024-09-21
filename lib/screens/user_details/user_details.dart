@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pneumothoraxdashboard/constants/app_colors.dart';
 import 'package:pneumothoraxdashboard/screens/user_details/widgets/button_tab_widget.dart';
 import 'package:pneumothoraxdashboard/screens/user_details/widgets/history_chart.dart';
@@ -6,6 +7,9 @@ import 'package:pneumothoraxdashboard/screens/user_details/widgets/history_table
 import 'package:pneumothoraxdashboard/api/dashboard_users_data.dart';
 import 'package:pneumothoraxdashboard/screens/user_details/widgets/image_gallery_widget.dart';
 import 'package:pneumothoraxdashboard/screens/user_details/widgets/medication_table.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 class UserDetails extends StatefulWidget {
   final String userId; // Add a field to store the user ID
@@ -23,7 +27,9 @@ class _UserDetailsState extends State<UserDetails> {
   bool hasData = false;
   bool showDrainageRate = true;
   bool showRespiratoryRate = true;
+  bool downloadReport = false;
   String userId = '';
+  DateTime? _selectedStartDate, _selectedEndDate;
 
   @override
   void initState() {
@@ -36,6 +42,40 @@ class _UserDetailsState extends State<UserDetails> {
     getAllImages(userId);
   }
 
+  Future<void> _selectStartDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(), // Default selection
+      firstDate: DateTime(2000), // Minimum date
+      lastDate: DateTime(2100), // Maximum date
+    );
+
+    // If the user selected a date, update the state
+    if (pickedDate != null && pickedDate != _selectedStartDate) {
+      setState(() {
+        _selectedStartDate = pickedDate;
+      });
+      print('${_selectedStartDate?.month} ${_selectedStartDate?.year}');
+    }
+  }
+
+  Future<void> _selectEndDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(), // Default selection
+      firstDate: DateTime(2000), // Minimum date
+      lastDate: DateTime(2100), // Maximum date
+    );
+
+    // If the user selected a date, update the state
+    if (pickedDate != null && pickedDate != _selectedEndDate) {
+      setState(() {
+        _selectedEndDate = pickedDate;
+      });
+      print('${_selectedEndDate?.month} ${_selectedEndDate?.year}');
+    }
+  }
+
   Future<void> getUserByIdData(String userId) async {
     DashboardUsersData.getUserByIdData(userId).then(
       (value) async {
@@ -44,7 +84,6 @@ class _UserDetailsState extends State<UserDetails> {
             userData = value['payload'];
             hasData = true;
           });
-          print('Userdetails data: ${userData}');
         } else {
           print('Failed to get user data');
         }
@@ -53,17 +92,32 @@ class _UserDetailsState extends State<UserDetails> {
   }
 
   Future<void> getDrainageRateHistories(String userId) async {
+    print(
+        'Start date: ${_selectedStartDate?.month} ${_selectedStartDate?.year}');
+    print('End date: ${_selectedEndDate?.month} ${_selectedEndDate?.year}');
     DashboardUsersData.getDrainageRateHistories(
             userId,
-            int.parse(DateTime.now().month.toString()),
-            int.parse(DateTime.now().year.toString()))
+            _selectedStartDate?.month ??
+                int.parse(DateTime.now().month.toString()),
+            _selectedStartDate?.year ??
+                int.parse(DateTime.now().year.toString()),
+            _selectedEndDate?.month ??
+                int.parse(DateTime.now().month.toString()),
+            _selectedEndDate?.year ?? int.parse(DateTime.now().year.toString()))
         .then(
       (value) async {
+        print('Drainage rate histories: $value');
         if (value != null) {
           final payload = value['payload'];
           setState(() {
             drainageRateHistory = payload['drainageRateHistory'];
           });
+          if (downloadReport) {
+            await generatePDFReport(drainageRateHistory);
+            setState(() {
+              downloadReport = false;
+            });
+          }
         } else {
           print('Failed to get user data');
         }
@@ -72,12 +126,14 @@ class _UserDetailsState extends State<UserDetails> {
   }
 
   Future<void> getRespiratoryRateHistories(String userId) async {
+    print('Clicked on respiratory rate function');
     DashboardUsersData.getRespiratoryRateHistories(
             userId,
             int.parse(DateTime.now().month.toString()),
             int.parse(DateTime.now().year.toString()))
         .then(
       (value) async {
+        print('Respiratory rate histories: $value');
         if (value != null) {
           final payload = value['payload'];
           setState(() {
@@ -105,6 +161,44 @@ class _UserDetailsState extends State<UserDetails> {
         }
       },
     );
+  }
+
+  Future<void> generatePDFReport(List<dynamic> drainageRateHistory) async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Column(
+            children: [
+              pw.Text('Drainage Rate Report',
+                  style: pw.TextStyle(fontSize: 24)),
+              pw.SizedBox(height: 20),
+              pw.TableHelper.fromTextArray(
+                context: context,
+                data: <List<dynamic>>[
+                  <String>['Date', 'Drainage Rate (mL/min)', 'Noise'],
+                  ...drainageRateHistory
+                      .map(
+                        (item) => [
+                          DateFormat('MMM d, yyyy')
+                              .format(DateTime.parse(item['createdAt'])),
+                          item['drainageRate'].toString(),
+                          item['drainageNoise']
+                        ],
+                      )
+                      .toList(),
+                ],
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    // Trigger the print dialog or save the PDF
+    await Printing.layoutPdf(
+        onLayout: (PdfPageFormat format) async => pdf.save());
   }
 
   @override
@@ -224,7 +318,7 @@ class _UserDetailsState extends State<UserDetails> {
                                   color: const Color(0xFF27AE60),
                                   value: userData['drainageRate'],
                                   onTap: () {
-                                    getDrainageRateHistories(userData['_id']);
+                                    getDrainageRateHistories(widget.userId);
                                     setState(() {
                                       showDrainageRate = true;
                                       showRespiratoryRate = false;
@@ -237,8 +331,7 @@ class _UserDetailsState extends State<UserDetails> {
                                   color: const Color(0xFFFD4646),
                                   value: userData['respiratoryRate'],
                                   onTap: () {
-                                    getRespiratoryRateHistories(
-                                        userData['_id']);
+                                    getRespiratoryRateHistories(widget.userId);
                                     setState(() {
                                       showDrainageRate = false;
                                       showRespiratoryRate = true;
@@ -255,6 +348,130 @@ class _UserDetailsState extends State<UserDetails> {
                                   },
                                   screenRatio: screenRatio,
                                 ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: screenSize.height * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Last recorded on:',
+                                  style: TextStyle(
+                                      fontSize: screenRatio * 8,
+                                      fontWeight: FontWeight.normal,
+                                      color: AppColors.primaryBlue),
+                                ),
+                                SizedBox(
+                                  width: screenRatio * 8,
+                                ),
+                                Text(
+                                  drainageRateHistory.isNotEmpty
+                                      ? DateFormat('MMM d, yyyy hh:mm a')
+                                          .format(
+                                          DateTime.parse(
+                                            drainageRateHistory
+                                                .last['createdAt'],
+                                          ),
+                                        )
+                                      : 'N/A',
+                                  style: TextStyle(
+                                      fontSize: screenRatio * 8,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.primaryBlue),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: screenSize.height * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Dowmload report:',
+                                  style: TextStyle(
+                                      fontSize: screenRatio * 8,
+                                      fontWeight: FontWeight.normal,
+                                      color: AppColors.primaryBlue),
+                                ),
+                                SizedBox(
+                                  width: screenRatio * 8,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () {
+                                        _selectStartDate(context);
+                                      },
+                                      child: Text(
+                                        'Start MM/YYYY',
+                                        style: TextStyle(
+                                          fontSize: screenRatio * 8,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.primaryBlue,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      _selectedStartDate != null
+                                          ? '${_selectedStartDate?.month} / ${_selectedStartDate?.year}'
+                                          : 'N/A',
+                                      style: TextStyle(
+                                        fontSize: screenRatio * 8,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.primaryBlue,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () {
+                                        _selectEndDate(context);
+                                      },
+                                      child: Text(
+                                        'End MM/YYYY',
+                                        style: TextStyle(
+                                          fontSize: screenRatio * 8,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.primaryBlue,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      _selectedStartDate != null
+                                          ? '${_selectedEndDate?.month} / ${_selectedEndDate?.year}'
+                                          : 'N/A',
+                                      style: TextStyle(
+                                        fontSize: screenRatio * 8,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.primaryBlue,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      downloadReport = true;
+                                    });
+                                    getDrainageRateHistories(widget.userId);
+                                  },
+                                  icon: Icon(
+                                    Icons.download,
+                                    color: AppColors.primaryBlue,
+                                    size: screenRatio * 16,
+                                  ),
+                                )
                               ],
                             ),
                             SizedBox(
