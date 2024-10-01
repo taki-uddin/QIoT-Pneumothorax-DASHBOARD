@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:html' as html;
 import 'package:pneumothoraxdashboard/helpers/session_storage_helpers.dart';
 import 'package:pneumothoraxdashboard/api/authentication.dart';
+import 'package:pneumothoraxdashboard/main.dart';
 
 class TokenRefreshService {
   static final TokenRefreshService _instance = TokenRefreshService._internal();
@@ -31,7 +32,7 @@ class TokenRefreshService {
 
   Future<void> _refreshToken() async {
     if (_deviceType == null) {
-      print('Token refresh skipped: insufficient data.');
+      logger.d('Token refresh skipped: insufficient data.');
       return;
     }
     String? accessToken = await SessionStorageHelpers.getStorage('accessToken');
@@ -51,7 +52,7 @@ class TokenRefreshService {
         _updateTokens(newAccessToken, newRefreshToken);
       }
     } catch (e) {
-      print('Failed to refresh token: $e');
+      logger.d('Failed to refresh token: $e');
     }
   }
 
@@ -63,7 +64,7 @@ class TokenRefreshService {
   void _setupVisibilityChangeListener() {
     html.document.onVisibilityChange.listen((event) {
       if (html.document.visibilityState == 'visible') {
-        print('App is visible again');
+        logger.d('App is visible again');
         startTokenRefreshTimer(); // Restart timer when app becomes visible
       }
     });

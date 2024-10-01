@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:pneumothoraxdashboard/constants/api_constants.dart';
 import 'package:pneumothoraxdashboard/helpers/session_storage_helpers.dart';
+import 'package:pneumothoraxdashboard/main.dart';
 
 class Authentication {
   static Future<Map<String, dynamic>> signIn(String email, String password,
@@ -22,9 +23,9 @@ class Authentication {
 
     try {
       http.StreamedResponse response = await request.send();
-      print('response: ${response.statusCode}');
+      logger.d('response: ${response.statusCode}');
       String responseBody = await response.stream.bytesToString();
-      print('responseBody: ${json.decode(responseBody)}');
+      logger.d('responseBody: ${json.decode(responseBody)}');
       if (response.statusCode == 200) {
         if (responseBody.isNotEmpty) {
           Map<String, dynamic> jsonResponse = json.decode(responseBody);
@@ -33,11 +34,11 @@ class Authentication {
           return {'success': false, 'error': 'Response body is empty or null'};
         }
       } else {
-        print('error: ${response.reasonPhrase}');
+        logger.d('error: ${response.reasonPhrase}');
         return {'success': false, 'error': response.reasonPhrase};
       }
     } catch (e) {
-      print('error: Failed to make HTTP request: $e');
+      logger.d('error: Failed to make HTTP request: $e');
       return {'success': false, 'error': 'Failed to make HTTP request: $e'};
     }
   }
@@ -48,7 +49,7 @@ class Authentication {
       'Authorization':
           'Bearer ${await SessionStorageHelpers.getStorage('accessToken')}',
     };
-    print(await SessionStorageHelpers.getStorage('userID'));
+    logger.d(await SessionStorageHelpers.getStorage('userID'));
 
     var request = http.Request(
         'DELETE',

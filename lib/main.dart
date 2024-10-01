@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:pneumothoraxdashboard/firebase_options.dart';
 import 'package:pneumothoraxdashboard/helpers/session_storage_helpers.dart';
 import 'package:pneumothoraxdashboard/routes/web_router_provider.dart';
@@ -15,10 +16,11 @@ import 'package:pneumothoraxdashboard/services/token_refresh_service.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 late bool _loginState;
 String deviceType = 'web';
+final Logger logger = Logger();
 
 Future _firebaseBackgroundMessageHandler(RemoteMessage message) async {
   if (message.notification != null) {
-    print('Message received in the background!');
+    logger.d('Message received in the background!');
   }
 }
 
@@ -50,7 +52,7 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
   } catch (e) {
-    print("Error initializing Firebase: $e");
+    logger.d("Error initializing Firebase: $e");
   }
 
   PushNotificationService.init();
@@ -65,7 +67,7 @@ void main() async {
     String? loginState = await SessionStorageHelpers.getStorage('loginState');
     _loginState = loginState != null && loginState == 'true';
   } catch (e) {
-    print("Error getting login state: $e");
+    logger.d("Error getting login state: $e");
     _loginState = false;
   }
 

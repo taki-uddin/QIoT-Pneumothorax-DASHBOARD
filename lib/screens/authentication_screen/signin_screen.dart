@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pneumothoraxdashboard/helpers/session_storage_helpers.dart';
 import 'package:pneumothoraxdashboard/api/authentication.dart';
+import 'package:pneumothoraxdashboard/main.dart';
 
 class SigninScreen extends StatefulWidget {
   const SigninScreen({super.key});
@@ -50,7 +51,7 @@ class _SigninScreenState extends State<SigninScreen> {
 
         SessionStorageHelpers.setStorage(
             'refreshToken', responseData?['refreshToken']);
-        print(responseData?['payload'][0]['user']['_id']);
+        logger.d(responseData?['payload'][0]['user']['_id']);
         SessionStorageHelpers.setStorage(
             'userID', responseData?['payload'][0]['user']['_id']);
         SessionStorageHelpers.setStorage(
@@ -65,10 +66,10 @@ class _SigninScreenState extends State<SigninScreen> {
         );
       } else {
         // Authentication failed
-        print('Authentication failed: $errorMessage');
+        logger.d('Authentication failed: $errorMessage');
       }
     } else {
-      print('Invalid form');
+      logger.d('Invalid form');
     }
   }
 

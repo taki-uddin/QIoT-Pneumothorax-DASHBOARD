@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:pneumothoraxdashboard/api/dashboard_users_data.dart';
 import 'dart:html' as html;
 
+import 'package:pneumothoraxdashboard/main.dart';
+
 class UserListScreen extends StatefulWidget {
   const UserListScreen({Key? key}) : super(key: key);
 
@@ -45,15 +47,15 @@ class _UserListScreenState extends State<UserListScreen> {
         final Map<String, dynamic>? uploadUserAAP = await DashboardUsersData()
             .uploadUsersAsthmaActionPlan(_selectedFile!, userId);
         if (uploadUserAAP != null) {
-          print('Your Asthma Action Plan has been uploaded!');
+          logger.d('Your Asthma Action Plan has been uploaded!');
         } else {
-          print('Failed to upload Asthma Action Plan');
+          logger.d('Failed to upload Asthma Action Plan');
         }
       } catch (e) {
-        print('Error: $e');
+        logger.d('Error: $e');
       }
     } else {
-      print('No file selected');
+      logger.d('No file selected');
     }
   }
 
@@ -73,7 +75,22 @@ class _UserListScreenState extends State<UserListScreen> {
             }).toList();
           });
         } else {
-          print('Failed to get user data');
+          logger.d('Failed to get user data');
+        }
+      },
+    );
+  }
+
+  Future<void> _enabledisableUsers(String userId, String newStatus) async {
+    Map<String, dynamic> updates = {
+      'status': newStatus, // Update status (Enabled or Disabled)
+    };
+    DashboardUsersData.updateUsers(userId, updates).then(
+      (value) async {
+        if (value != null) {
+          logger.d('Value: $value');
+        } else {
+          logger.d('Failed to get user data');
         }
       },
     );
@@ -257,8 +274,10 @@ class _UserListScreenState extends State<UserListScreen> {
                       onTap: () {
                         Navigator.pushNamed(
                           context,
-                          '/usersdetails/${userData[index]['_id']}',
-                          arguments: {'id': '${userData[index]['_id']}'},
+                          '/usersdetails/${filteredUserData[index]['_id']}',
+                          arguments: {
+                            'id': '${filteredUserData[index]['_id']}'
+                          },
                         );
                       },
                       child: MouseRegion(
@@ -327,7 +346,7 @@ class _UserListScreenState extends State<UserListScreen> {
                               Expanded(
                                 flex: 2,
                                 child: Text(
-                                  '${filteredUserData[index]['temeprature']}',
+                                  '${filteredUserData[index]['temperature']}',
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
                                     fontSize: 24,
@@ -378,10 +397,19 @@ class _UserListScreenState extends State<UserListScreen> {
                                       child: Switch(
                                         value: _rowEnabled[
                                             index], // Use _rowEnabled to enable/disable rows
-                                        onChanged: (newValue) {
+                                        onChanged: (newValue) async {
                                           setState(() {
                                             _rowEnabled[index] = newValue;
                                           });
+
+                                          // Determine newStatus based on the switch value
+                                          String newStatus =
+                                              newValue ? 'Enabled' : 'Disabled';
+
+                                          // Call the _enabledisableUsers function and pass userId and newStatus
+                                          await _enabledisableUsers(
+                                              filteredUserData[index]['_id'],
+                                              newStatus);
                                         },
                                         activeColor: const Color(
                                             0xFF004283), // Set active color

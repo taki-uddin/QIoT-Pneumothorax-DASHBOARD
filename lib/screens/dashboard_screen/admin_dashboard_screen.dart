@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:pneumothoraxdashboard/data/top_menu_data.dart';
 import 'package:pneumothoraxdashboard/helpers/session_storage_helpers.dart';
+import 'package:pneumothoraxdashboard/main.dart';
 import 'package:pneumothoraxdashboard/screens/add_users_screen.dart';
 import 'package:pneumothoraxdashboard/screens/notifications_screen.dart';
 import 'package:pneumothoraxdashboard/screens/user_list_screen.dart';
@@ -34,48 +35,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   @override
   void initState() {
     super.initState();
-    getpdfUrl();
     getuserRole();
   }
 
   void getuserRole() async {
     final String? userRole = widget.userRole;
-    print('Admin screen User Role: $userRole');
-  }
-
-  Future<void> getpdfUrl() async {
-    final Map<String, dynamic>? pdfUrlData =
-        await DashboardUsersData().getEducationalPlan();
-    if (pdfUrlData != null) {
-      setState(() {
-        pdfUrl = pdfUrlData['educationalPlans'];
-      });
-      // Load PDF document once url is fetched
-      await loadPdfDocument();
-      print('pdfUrlData: $pdfUrl');
-    } else {
-      print('Failed to get pdf url');
-    }
-  }
-
-  Future<void> loadPdfDocument() async {
-    // Fetch PDF bytes asynchronously
-    final Uint8List bytes = await fetchPdfBytes(pdfUrl);
-    // Initialize PdfControllerPinch with document
-    pdfPinchController = PdfControllerPinch(
-      document: PdfDocument.openData(bytes),
-    );
-    // Update UI
-    setState(() {});
-  }
-
-  Future<Uint8List> fetchPdfBytes(String pdfUrl) async {
-    final response = await http.get(Uri.parse(pdfUrl));
-    if (response.statusCode == 200) {
-      return response.bodyBytes;
-    } else {
-      throw Exception('Failed to load PDF: ${response.statusCode}');
-    }
+    logger.d('Admin screen User Role: $userRole');
   }
 
   Future<void> uploadEP() async {
@@ -98,15 +63,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         final Map<String, dynamic>? uploadUserAAP =
             await DashboardUsersData().uploadEducationalPlan(_selectedFile!);
         if (uploadUserAAP != null) {
-          print('Your Asthma Action Plan has been uploaded!');
+          logger.d('Your Asthma Action Plan has been uploaded!');
         } else {
-          print('Failed to upload Asthma Action Plan');
+          logger.d('Failed to upload Asthma Action Plan');
         }
       } catch (e) {
-        print('Error: $e');
+        logger.d('Error: $e');
       }
     } else {
-      print('No file selected');
+      logger.d('No file selected');
     }
   }
 
@@ -190,7 +155,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                   Navigator.popAndPushNamed(context, '/');
                                 } else {
                                   // Authentication failed
-                                  print('Authentication failed: $errorMessage');
+                                  logger.d(
+                                      'Authentication failed: $errorMessage');
                                 }
                               },
                               leading: const Icon(Icons.logout),
@@ -354,7 +320,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   Widget getCustomMenu() {
-    print(_selectedIndex);
+    logger.d(_selectedIndex);
     switch (_selectedIndex) {
       case 0:
         return const UserListScreen();

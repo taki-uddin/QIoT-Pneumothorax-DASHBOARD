@@ -34,9 +34,9 @@ class PushNotificationService {
               'BHUmYLbdwedDQjN4btEurN4SBwTLJYNwcZy3WKA2DL3UMu7fhc0Pe23S-zzubOvQkt_FdmfWcyk2u1WA38-6C3s');
       return token;
     } catch (e) {
-      print('failed to get device token');
+      logger.d('failed to get device token');
       if (maxRetires > 0) {
-        print('try after 10 sec');
+        logger.d('try after 10 sec');
         await Future.delayed(const Duration(seconds: 10));
         return getFCMToken(maxRetires: maxRetires - 1);
       } else {
@@ -76,7 +76,7 @@ class PushNotificationService {
       );
     } else {
       // Handle the case where _flutterLocalNotificationsPlugin is null
-      print('Error: _flutterLocalNotificationsPlugin is null');
+      logger.d('Error: _flutterLocalNotificationsPlugin is null');
     }
   }
 
@@ -93,7 +93,7 @@ class PushNotificationService {
   static void onNotificationTapBackground() {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       if (message.notification != null) {
-        print('Message received in the background!');
+        logger.d('Message received in the background!');
         navigatorKey.currentState!.pushNamed(
           "/notification",
           arguments: message,
@@ -105,7 +105,7 @@ class PushNotificationService {
   static void onNotificationTapForeground() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       String payloadData = jsonEncode(message.data);
-      print('Message received in the foreground!');
+      logger.d('Message received in the foreground!');
       if (message.notification != null) {
         if (kIsWeb) {
           showNotification(
@@ -127,7 +127,7 @@ class PushNotificationService {
     final RemoteMessage? initialMessage =
         await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
-      print('Message received in terminated state!');
+      logger.d('Message received in terminated state!');
       Future.delayed(const Duration(seconds: 1), () {
         navigatorKey.currentState!.pushNamed(
           "/notification",

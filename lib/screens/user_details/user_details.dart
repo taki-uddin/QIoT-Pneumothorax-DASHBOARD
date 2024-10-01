@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pneumothoraxdashboard/constants/app_colors.dart';
+import 'package:pneumothoraxdashboard/main.dart';
 import 'package:pneumothoraxdashboard/screens/user_details/widgets/button_tab_widget.dart';
 import 'package:pneumothoraxdashboard/screens/user_details/widgets/history_chart.dart';
 import 'package:pneumothoraxdashboard/screens/user_details/widgets/history_table.dart';
@@ -9,6 +10,7 @@ import 'package:pneumothoraxdashboard/screens/user_details/widgets/image_gallery
 import 'package:pneumothoraxdashboard/screens/user_details/widgets/medication_table.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:pneumothoraxdashboard/screens/user_details/widgets/notes_card_widget.dart';
 import 'package:printing/printing.dart';
 
 class UserDetails extends StatefulWidget {
@@ -24,6 +26,7 @@ class _UserDetailsState extends State<UserDetails> {
   List<dynamic> drainageRateHistory = [];
   List<dynamic> respiratoryRateHistory = [];
   List<dynamic> getAllImagesHistory = [];
+  List<dynamic> getAllNotesData = [];
   bool hasData = false;
   bool showDrainageRate = true;
   bool showRespiratoryRate = true;
@@ -40,6 +43,7 @@ class _UserDetailsState extends State<UserDetails> {
     getUserByIdData(userId);
     getDrainageRateHistories(userId);
     getAllImages(userId);
+    getAllNotes(userId);
   }
 
   Future<void> _selectStartDate(BuildContext context) async {
@@ -55,7 +59,7 @@ class _UserDetailsState extends State<UserDetails> {
       setState(() {
         _selectedStartDate = pickedDate;
       });
-      print('${_selectedStartDate?.month} ${_selectedStartDate?.year}');
+      logger.d('${_selectedStartDate?.month} ${_selectedStartDate?.year}');
     }
   }
 
@@ -72,7 +76,7 @@ class _UserDetailsState extends State<UserDetails> {
       setState(() {
         _selectedEndDate = pickedDate;
       });
-      print('${_selectedEndDate?.month} ${_selectedEndDate?.year}');
+      logger.d('${_selectedEndDate?.month} ${_selectedEndDate?.year}');
     }
   }
 
@@ -85,16 +89,16 @@ class _UserDetailsState extends State<UserDetails> {
             hasData = true;
           });
         } else {
-          print('Failed to get user data');
+          logger.d('Failed to get user data');
         }
       },
     );
   }
 
   Future<void> getDrainageRateHistories(String userId) async {
-    print(
+    logger.d(
         'Start date: ${_selectedStartDate?.month} ${_selectedStartDate?.year}');
-    print('End date: ${_selectedEndDate?.month} ${_selectedEndDate?.year}');
+    logger.d('End date: ${_selectedEndDate?.month} ${_selectedEndDate?.year}');
     DashboardUsersData.getDrainageRateHistories(
             userId,
             _selectedStartDate?.month ??
@@ -106,7 +110,7 @@ class _UserDetailsState extends State<UserDetails> {
             _selectedEndDate?.year ?? int.parse(DateTime.now().year.toString()))
         .then(
       (value) async {
-        print('Drainage rate histories: $value');
+        logger.d('Drainage rate histories: $value');
         if (value != null) {
           final payload = value['payload'];
           setState(() {
@@ -119,28 +123,28 @@ class _UserDetailsState extends State<UserDetails> {
             });
           }
         } else {
-          print('Failed to get user data');
+          logger.d('Failed to get user data');
         }
       },
     );
   }
 
   Future<void> getRespiratoryRateHistories(String userId) async {
-    print('Clicked on respiratory rate function');
+    logger.d('Clicked on respiratory rate function');
     DashboardUsersData.getRespiratoryRateHistories(
             userId,
             int.parse(DateTime.now().month.toString()),
             int.parse(DateTime.now().year.toString()))
         .then(
       (value) async {
-        print('Respiratory rate histories: $value');
+        logger.d('Respiratory rate histories: $value');
         if (value != null) {
           final payload = value['payload'];
           setState(() {
             respiratoryRateHistory = payload['respiratoryRateHistory'];
           });
         } else {
-          print('Failed to get user data');
+          logger.d('Failed to get user data');
         }
       },
     );
@@ -157,7 +161,25 @@ class _UserDetailsState extends State<UserDetails> {
             getAllImagesHistory = payload;
           });
         } else {
-          print('Failed to get image data');
+          logger.d('Failed to get image data');
+        }
+      },
+    );
+  }
+
+  Future<void> getAllNotes(String userId) async {
+    DashboardUsersData.getAllNotes(
+      userId,
+    ).then(
+      (value) async {
+        if (value != null) {
+          final payload = value['payload'];
+          setState(() {
+            getAllNotesData = payload;
+          });
+          logger.d('All notes data: $getAllNotesData');
+        } else {
+          logger.d('Failed to get image data');
         }
       },
     );
@@ -252,7 +274,7 @@ class _UserDetailsState extends State<UserDetails> {
                               height: screenSize.height * 0.02,
                             ),
                             Text(
-                              'Body Temperature: ${userData['temeprature']}', // Display the user ID
+                              'Body Temperature: ${userData['temperature']}', // Display the user ID
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.normal,
@@ -530,21 +552,72 @@ class _UserDetailsState extends State<UserDetails> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Images',
-                              style: TextStyle(
-                                fontSize: screenRatio * 12,
-                                fontWeight: FontWeight.normal,
+                            SizedBox(
+                              height: screenSize.height * 0.48,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      'Images',
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        fontSize: screenRatio * 10,
+                                        fontWeight: FontWeight.normal,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: screenSize.height * 0.02,
+                                    ),
+                                    SizedBox(
+                                      height: screenSize.height * 0.88,
+                                      child: ImageGalleryWidget(
+                                        getAllImagesHistory:
+                                            getAllImagesHistory,
+                                        screenRatio: screenRatio,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                             SizedBox(
-                              height: screenSize.height * 0.02,
-                            ),
-                            SizedBox(
-                              height: screenSize.height * 0.88,
-                              child: ImageGalleryWidget(
-                                getAllImagesHistory: getAllImagesHistory,
-                                screenRatio: screenRatio,
+                              height: screenSize.height * 0.48,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      'Notes',
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        fontSize: screenRatio * 10,
+                                        fontWeight: FontWeight.normal,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: screenSize.height * 0.02,
+                                    ),
+                                    SizedBox(
+                                      height: screenSize.height * 0.88,
+                                      child: getAllNotesData.isEmpty
+                                          ? const Center(
+                                              child: Text('No notes available'),
+                                            )
+                                          : ListView.builder(
+                                              padding: EdgeInsets.all(
+                                                  screenRatio * 4),
+                                              itemCount: getAllNotesData.length,
+                                              itemBuilder: (context, index) {
+                                                final notes =
+                                                    getAllNotesData[index];
+                                                return NoteCardWidget(
+                                                  note: notes,
+                                                  screenRatio: screenRatio,
+                                                );
+                                              },
+                                            ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],

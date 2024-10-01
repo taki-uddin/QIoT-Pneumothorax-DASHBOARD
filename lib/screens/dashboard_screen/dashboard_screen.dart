@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:pneumothoraxdashboard/data/top_menu_data.dart';
 import 'package:pneumothoraxdashboard/helpers/session_storage_helpers.dart';
+import 'package:pneumothoraxdashboard/main.dart';
 import 'package:pneumothoraxdashboard/screens/add_users_screen.dart';
 import 'package:pneumothoraxdashboard/screens/notifications_screen.dart';
 import 'package:pneumothoraxdashboard/screens/user_list_screen.dart';
@@ -33,23 +34,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    getpdfUrl();
     _printToken();
-  }
-
-  Future<void> getpdfUrl() async {
-    final Map<String, dynamic>? pdfUrlData =
-        await DashboardUsersData().getEducationalPlan();
-    if (pdfUrlData != null) {
-      setState(() {
-        pdfUrl = pdfUrlData['educationalPlans'];
-      });
-      // Load PDF document once url is fetched
-      await loadPdfDocument();
-      print('pdfUrlData: $pdfUrl');
-    } else {
-      print('Failed to get pdf url');
-    }
   }
 
   Future<void> loadPdfDocument() async {
@@ -92,20 +77,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
         final Map<String, dynamic>? uploadUserAAP =
             await DashboardUsersData().uploadEducationalPlan(_selectedFile!);
         if (uploadUserAAP != null) {
-          print('Your Asthma Action Plan has been uploaded!');
+          logger.d('Your Asthma Action Plan has been uploaded!');
         } else {
-          print('Failed to upload Asthma Action Plan');
+          logger.d('Failed to upload Asthma Action Plan');
         }
       } catch (e) {
-        print('Error: $e');
+        logger.d('Error: $e');
       }
     } else {
-      print('No file selected');
+      logger.d('No file selected');
     }
   }
 
   Future<void> _printToken() async {
-    print(
+    logger.d(
         'Dashboard Access Token: ${await SessionStorageHelpers.getStorage('accessToken')}');
   }
 
@@ -156,7 +141,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     horizontal: 8.0,
                                     vertical: 4.0,
                                   ),
-                                  height: screenSize.height * 0.6,
+                                  height: screenSize.height * 0.4,
                                   child: ListView.builder(
                                     itemCount: data.menu.length,
                                     itemBuilder: (context, index) =>
@@ -189,7 +174,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   Navigator.popAndPushNamed(context, '/');
                                 } else {
                                   // Authentication failed
-                                  print('Authentication failed: $errorMessage');
+                                  logger.d(
+                                      'Authentication failed: $errorMessage');
                                 }
                               },
                               leading: const Icon(Icons.logout),
@@ -353,7 +339,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget getCustomMenu() {
-    print(_selectedIndex);
+    logger.d(_selectedIndex);
     switch (_selectedIndex) {
       case 0:
         return const UserListScreen();
