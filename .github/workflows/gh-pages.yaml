@@ -25,11 +25,6 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Decode Secrets
-        run: base64 -d .github/secrets.json.base64 > .github/secrets.json
-        env:
-          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
-
       - name: Build Web
         run: flutter build web --release
 
