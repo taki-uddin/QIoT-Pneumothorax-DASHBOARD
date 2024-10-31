@@ -158,7 +158,7 @@ class HistoryChart extends StatelessWidget {
     final date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
 
     // Format the date as 'Sep 13, 2024 03:20 PM'
-    final formattedDate = DateFormat('MMM d, yyyy hh:mm a').format(date);
+    final formattedDate = DateFormat('MMM d, yyyy hh:mm:ss a').format(date);
 
     return SideTitleWidget(
       axisSide: meta.axisSide,

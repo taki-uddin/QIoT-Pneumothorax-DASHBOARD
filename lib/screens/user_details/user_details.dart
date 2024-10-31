@@ -10,8 +10,8 @@ import 'package:pneumothoraxdashboard/screens/user_details/widgets/image_gallery
 import 'package:pneumothoraxdashboard/screens/user_details/widgets/medication_table.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:pneumothoraxdashboard/screens/user_details/widgets/notes_card_widget.dart';
 import 'package:printing/printing.dart';
+import 'package:pneumothoraxdashboard/screens/user_details/widgets/notes_card_widget.dart';
 
 class UserDetails extends StatefulWidget {
   final String userId; // Add a field to store the user ID
@@ -100,15 +100,12 @@ class _UserDetailsState extends State<UserDetails> {
         'Start date: ${_selectedStartDate?.month} ${_selectedStartDate?.year}');
     logger.d('End date: ${_selectedEndDate?.month} ${_selectedEndDate?.year}');
     DashboardUsersData.getDrainageRateHistories(
-            userId,
-            _selectedStartDate?.month ??
-                int.parse(DateTime.now().month.toString()),
-            _selectedStartDate?.year ??
-                int.parse(DateTime.now().year.toString()),
-            _selectedEndDate?.month ??
-                int.parse(DateTime.now().month.toString()),
-            _selectedEndDate?.year ?? int.parse(DateTime.now().year.toString()))
-        .then(
+      userId,
+      _selectedStartDate?.month ?? int.parse(DateTime.now().month.toString()),
+      _selectedStartDate?.year ?? int.parse(DateTime.now().year.toString()),
+      _selectedEndDate?.month ?? int.parse(DateTime.now().month.toString()),
+      _selectedEndDate?.year ?? int.parse(DateTime.now().year.toString()),
+    ).then(
       (value) async {
         logger.d('Drainage rate histories: $value');
         if (value != null) {
