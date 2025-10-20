@@ -5,14 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:pneumothoraxdashboard/data/top_menu_data.dart';
-import 'package:pneumothoraxdashboard/helpers/session_storage_helpers.dart';
 import 'package:pneumothoraxdashboard/main.dart';
 import 'package:pneumothoraxdashboard/screens/add_users_screen.dart';
 import 'package:pneumothoraxdashboard/screens/notifications_screen.dart';
 import 'package:pneumothoraxdashboard/screens/user_list_screen.dart';
 import 'package:pneumothoraxdashboard/api/authentication.dart';
-import 'package:http/http.dart' as http;
-import 'dart:html' as html;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:pneumothoraxdashboard/api/dashboard_users_data.dart';
 
@@ -28,7 +26,7 @@ class AdminDashboardScreen extends StatefulWidget {
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   int _selectedIndex = 0;
   final data = TopMenuData();
-  html.File? _selectedFile;
+  dynamic _selectedFile;
   String pdfUrl = '';
   PdfControllerPinch? pdfPinchController;
 
@@ -52,11 +50,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     if (result != null) {
       PlatformFile file = result.files.single;
 
-      // Read the file bytes asynchronously
-      List<int> bytes = file.bytes!.toList();
-
       setState(() {
-        _selectedFile = html.File(bytes, file.name); // For web
+        if (kIsWeb) {
+          // For web platform
+          _selectedFile = file;
+        } else {
+          // For mobile platforms
+          _selectedFile = file;
+        }
       });
 
       try {

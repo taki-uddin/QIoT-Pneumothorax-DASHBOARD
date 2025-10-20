@@ -21,15 +21,9 @@ class DefaultFirebaseOptions {
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for android - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -53,12 +47,30 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAds6uGAnChbX4tnFete6ox9gclRF2qIHc',
-    appId: '1:1037772283044:web:6b1d46396ba4c1f4501a31',
-    messagingSenderId: '1037772283044',
-    projectId: 'qiot-pneumothorax-app',
-    authDomain: 'qiot-pneumothorax-app.firebaseapp.com',
-    storageBucket: 'qiot-pneumothorax-app.appspot.com',
-    measurementId: 'G-MYY3VCE1NJ',
+    apiKey: 'AIzaSyCPJwRd2ZQuMn-SE36tOk1gnCs6FPafGsg',
+    appId: '1:818251760564:web:9ae4c651794ce95e9728e1',
+    messagingSenderId: '818251760564',
+    projectId: 'qiot-pneumothorax',
+    authDomain: 'qiot-pneumothorax.firebaseapp.com',
+    storageBucket: 'qiot-pneumothorax.firebasestorage.app',
+    measurementId: 'G-PK0PD0PFMC',
   );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyAzRaN5CbL9YKJRRPNJptE3Vc82-X5BsEU',
+    appId: '1:818251760564:ios:4329ccdda054597a9728e1',
+    messagingSenderId: '818251760564',
+    projectId: 'qiot-pneumothorax',
+    storageBucket: 'qiot-pneumothorax.firebasestorage.app',
+    iosBundleId: 'com.qiot.pneumothoraxdashboard',
+  );
+
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyBneB4Yzo7dYae0ZPx4iTU6VZjl3y_LVmI',
+    appId: '1:818251760564:android:52b0d2a7b39535c89728e1',
+    messagingSenderId: '818251760564',
+    projectId: 'qiot-pneumothorax',
+    storageBucket: 'qiot-pneumothorax.firebasestorage.app',
+  );
+
 }

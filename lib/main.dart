@@ -65,10 +65,26 @@ void main() async {
 
   try {
     String? loginState = await SessionStorageHelpers.getStorage('loginState');
-    _loginState = loginState != null && loginState == 'true';
+    String? accessToken = await SessionStorageHelpers.getStorage('accessToken');
+    String? refreshToken =
+        await SessionStorageHelpers.getStorage('refreshToken');
+
+    // Only consider user logged in if we have all required tokens
+    _loginState =
+        loginState == 'true' && accessToken != null && refreshToken != null;
+
+    if (_loginState) {
+      logger.d('User is logged in - tokens found');
+    } else {
+      logger.d('User is not logged in - clearing any partial state');
+      // Clear any partial authentication state
+      await SessionStorageHelpers.clearStorage();
+    }
   } catch (e) {
     logger.d("Error getting login state: $e");
     _loginState = false;
+    // Clear storage on error to ensure clean state
+    await SessionStorageHelpers.clearStorage();
   }
 
   defineRoutes(router);
@@ -100,11 +116,27 @@ class _MainState extends State<Main> {
   }
 
   Future<void> _initializeTokenRefreshService() async {
-    // Initialize the TokenRefreshService
-    await Future.delayed(const Duration(seconds: 2)); // Optional delay
-    _tokenRefreshService.initialize(null, deviceType);
+    // Only initialize token refresh service if user is logged in
+    if (!_loginState) {
+      logger.d('Token refresh service not initialized: user not logged in');
+      return;
+    }
 
-    _tokenRefreshService.startTokenRefreshTimer(); // Optional refresh token
+    try {
+      // Get FCM device token
+      String? deviceToken = await PushNotificationService.getFCMToken();
+
+      if (deviceToken != null) {
+        logger.d('Initializing token refresh service with device token');
+        _tokenRefreshService.initialize(deviceToken, deviceType);
+        _tokenRefreshService.startTokenRefreshTimer();
+      } else {
+        logger.d(
+            'Token refresh service not initialized: no device token available');
+      }
+    } catch (e) {
+      logger.d('Error initializing token refresh service: $e');
+    }
   }
 
   @override

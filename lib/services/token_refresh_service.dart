@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/material.dart';
 import 'package:pneumothoraxdashboard/helpers/session_storage_helpers.dart';
 import 'package:pneumothoraxdashboard/api/authentication.dart';
 import 'package:pneumothoraxdashboard/main.dart';
@@ -35,13 +36,28 @@ class TokenRefreshService {
       logger.d('Token refresh skipped: insufficient data.');
       return;
     }
+    
+    // Check if user is still logged in
+    String? loginState = await SessionStorageHelpers.getStorage('loginState');
+    if (loginState != 'true') {
+      logger.d('Token refresh skipped: user not logged in');
+      return;
+    }
+    
     String? accessToken = await SessionStorageHelpers.getStorage('accessToken');
     String? refreshToken =
         await SessionStorageHelpers.getStorage('refreshToken');
+    
+    // Check if tokens exist before proceeding
+    if (accessToken == null || refreshToken == null) {
+      logger.d('Token refresh skipped: accessToken or refreshToken is null');
+      return;
+    }
+    
     try {
       final response = await Authentication().refreshToken(
-        accessToken!,
-        refreshToken!,
+        accessToken,
+        refreshToken,
         _deviceToken,
         _deviceType!,
       );
@@ -50,9 +66,16 @@ class TokenRefreshService {
         final newAccessToken = jsonResponse['data']['accessToken'];
         final newRefreshToken = jsonResponse['data']['refreshToken'];
         _updateTokens(newAccessToken, newRefreshToken);
+        logger.d('Token refresh successful');
+      } else {
+        logger.d('Token refresh failed: ${jsonResponse['data']}');
+        // If token refresh fails, log out the user
+        await _handleTokenRefreshFailure();
       }
     } catch (e) {
       logger.d('Failed to refresh token: $e');
+      // If token refresh fails, log out the user
+      await _handleTokenRefreshFailure();
     }
   }
 
@@ -61,13 +84,24 @@ class TokenRefreshService {
     SessionStorageHelpers.setStorage('refreshToken', newRefreshToken);
   }
 
+  Future<void> _handleTokenRefreshFailure() async {
+    logger.d('Handling token refresh failure - logging out user');
+    // Clear stored tokens and login state
+    await SessionStorageHelpers.clearStorage();
+    // Navigate to login screen
+    if (navigatorKey.currentContext != null) {
+      Navigator.of(navigatorKey.currentContext!).pushNamedAndRemoveUntil(
+        '/',
+        (route) => false,
+      );
+    }
+  }
+
   void _setupVisibilityChangeListener() {
-    html.document.onVisibilityChange.listen((event) {
-      if (html.document.visibilityState == 'visible') {
-        logger.d('App is visible again');
-        startTokenRefreshTimer(); // Restart timer when app becomes visible
-      }
-    });
+    if (kIsWeb) {
+      // Only set up visibility listener for web platform
+      // For mobile platforms, this is not needed
+    }
   }
 
   void dispose() {

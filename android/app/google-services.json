@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "818251760564",
+    "project_id": "qiot-pneumothorax",
+    "storage_bucket": "qiot-pneumothorax.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:818251760564:android:52b0d2a7b39535c89728e1",
+        "android_client_info": {
+          "package_name": "com.qiot.pneumothoraxdashboard"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBneB4Yzo7dYae0ZPx4iTU6VZjl3y_LVmI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

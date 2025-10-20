@@ -49,6 +49,8 @@ class MedicationTable extends StatelessWidget {
   }
 
   TableCell _buildHeaderCell(String text, double screenRatio) {
+    // Use a larger font size for mobile
+    final double fontSize = screenRatio * 10 < 16 ? 16 : screenRatio * 10;
     return TableCell(
       child: SizedBox(
         height: 60.0,
@@ -58,7 +60,7 @@ class MedicationTable extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               color: AppColors.primaryWhite,
-              fontSize: screenRatio * 7,
+              fontSize: fontSize,
               fontWeight: FontWeight.bold,
               fontFamily: 'Roboto',
             ),
@@ -69,6 +71,8 @@ class MedicationTable extends StatelessWidget {
   }
 
   TableCell _buildDataCell(String text, double screenRatio) {
+    // Use a larger font size for mobile
+    final double fontSize = screenRatio * 9 < 15 ? 15 : screenRatio * 9;
     return TableCell(
       child: SizedBox(
         height: 36.0,
@@ -80,7 +84,7 @@ class MedicationTable extends StatelessWidget {
               text,
               style: TextStyle(
                 color: AppColors.primaryBlue,
-                fontSize: screenRatio * 6,
+                fontSize: fontSize,
                 fontWeight: FontWeight.normal,
                 fontFamily: 'Roboto',
               ),

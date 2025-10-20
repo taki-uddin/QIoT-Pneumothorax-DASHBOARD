@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:pneumothoraxdashboard/constants/api_constants.dart';
-import 'dart:html' as html;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:pneumothoraxdashboard/helpers/session_storage_helpers.dart';
 import 'package:pneumothoraxdashboard/main.dart';
 
@@ -208,7 +208,7 @@ class DashboardUsersData {
   }
 
   Future<Map<String, dynamic>?> uploadUsersAsthmaActionPlan(
-    html.File file,
+    dynamic file,
     String userId,
   ) async {
     var headers = {
@@ -223,10 +223,14 @@ class DashboardUsersData {
             '${ApiConstants.baseURL}/admin/uploadasthmaactionplan/$userId'));
 
     // Read file bytes
-    var reader = html.FileReader();
-    reader.readAsArrayBuffer(file);
-    await reader.onLoad.first; // Wait for file to be loaded
-    List<int> fileBytes = reader.result as List<int>;
+    List<int> fileBytes;
+    if (kIsWeb) {
+      // For web platform, file should already be bytes from FilePicker
+      fileBytes = file.bytes;
+    } else {
+      // For mobile platforms, file should already be bytes
+      fileBytes = file.bytes;
+    }
 
     // Add the file to the request
     request.files.add(
@@ -263,7 +267,7 @@ class DashboardUsersData {
   }
 
   Future<Map<String, dynamic>?> uploadEducationalPlan(
-    html.File file,
+    dynamic file,
   ) async {
     var headers = {
       // 'Content-Type': 'application/json',
@@ -275,10 +279,14 @@ class DashboardUsersData {
         Uri.parse('${ApiConstants.baseURL}/admin/uploadeducationalplan'));
 
     // Read file bytes
-    var reader = html.FileReader();
-    reader.readAsArrayBuffer(file);
-    await reader.onLoad.first; // Wait for file to be loaded
-    List<int> fileBytes = reader.result as List<int>;
+    List<int> fileBytes;
+    if (kIsWeb) {
+      // For web platform, file should already be bytes from FilePicker
+      fileBytes = file.bytes;
+    } else {
+      // For mobile platforms, file should already be bytes
+      fileBytes = file.bytes;
+    }
 
     // Add the file to the request
     request.files.add(
